@@ -74,8 +74,8 @@ sub register_cache_backend {
 
     no warnings 'uninitialized';
     Carp::croak("$backend does not look like a cache backend - "
-    . "it must be an object supporting get, set and delete")
-        unless eval { $backend->can("get") && $backend->can("set") && $backend->can("delete") };
+    . "it must be an object supporting get, set and remove")
+        unless eval { $backend->can("get") && $backend->can("set") && $backend->can("remove") };
 
     $c->_cache_backends->{$name} = $backend;
 }
@@ -139,9 +139,9 @@ sub cache_get {
     $c->choose_cache_backend_wrapper( key => $key, @meta )->get( $key );
 }
 
-sub cache_delete {
+sub cache_remove {
     my ( $c, $key, @meta ) = @_;
-    $c->choose_cache_backend_wrapper( key => $key, @meta )->delete( $key );
+    $c->choose_cache_backend_wrapper( key => $key, @meta )->remove( $key );
 }
 
 __PACKAGE__;

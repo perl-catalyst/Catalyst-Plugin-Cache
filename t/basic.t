@@ -21,7 +21,7 @@ use ok "Catalyst::Plugin::Cache";
     sub new { bless {}, shift }
     sub get { ${thaw($_[0]{$_[1]}) || return} };
     sub set { $_[0]{$_[1]} = freeze(\$_[2]) };
-    sub delete { delete $_[0]{$_[1]} };
+    sub remove { delete $_[0]{$_[1]} };
 }
 
 MockApp->setup;
@@ -65,13 +65,13 @@ can_ok( $c, "choose_cache_backend" );
 
 can_ok( $c, "cache_set" );
 can_ok( $c, "cache_get" );
-can_ok( $c, "cache_delete" );
+can_ok( $c, "cache_remove" );
 
 $c->cache_set( foo => "bar" );
 is( $c->cache_get("foo"), "bar", "set" );
 
-$c->cache_delete( "foo" );
-is( $c->cache_get("foo"), undef, "delete" );
+$c->cache_remove( "foo" );
+is( $c->cache_get("foo"), undef, "remove" );
 
 MockApp->register_cache_backend( elk => MemoryCache->new );
 

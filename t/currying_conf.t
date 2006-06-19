@@ -19,25 +19,22 @@ use ok "Catalyst::Plugin::Cache";
                 foo => {
                     bah => "foo",
                 },
-                bar => MemoryCache->new,
+                bar => bless( {}, "SomeClass" ),
             },
         },
     );
     sub config { \%config };
 
-    package MemoryCache;
-    use Storable qw/freeze thaw/;
-    
-    sub new { bless {}, shift }
-    sub get { ${thaw($_[0]{$_[1]}) || return} };
-    sub set { $_[0]{$_[1]} = freeze(\$_[2]) };
-    sub delete { delete $_[0]{$_[1]} };
+    package SomeClass;
+    sub get {}
+    sub set {}
+    sub remove {}
 }
 
 MockApp->setup;
 my $c = bless {}, "MockApp";
 
-MockApp->register_cache_backend( default => MemoryCache->new );
+MockApp->register_cache_backend( default => bless({}, "SomeClass") );
 
 can_ok( $c, "curry_cache" );
 can_ok( $c, "get_preset_curried" );

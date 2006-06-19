@@ -13,7 +13,7 @@ sub get {
     my ( $self, $key ) = @_;
 }
 
-sub delete {
+sub remove {
     my ( $self, $key ) = @_;
 }
 
@@ -32,6 +32,8 @@ Catalyst::Plugin::Cache::Backend - Bare minimum backend interface.
 	use Catalyst::Plugin::Cache::Backend;
 
 =head1 DESCRIPTION
+
+This is less than L<Cache::Cache>.
 
 =cut
 

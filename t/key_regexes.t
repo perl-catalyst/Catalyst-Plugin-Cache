@@ -28,7 +28,7 @@ use ok "Catalyst::Plugin::Cache::Choose::KeyRegexes";
     sub new { bless {}, shift }
     sub get { ${thaw($_[0]{$_[1]}) || return} };
     sub set { $_[0]{$_[1]} = freeze(\$_[2]) };
-    sub delete { delete $_[0]{$_[1]} };
+    sub remove { delete $_[0]{$_[1]} };
 }
 
 

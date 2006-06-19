@@ -39,9 +39,9 @@ sub get {
     $self->c->cache_get( $key, @{ $self->meta } );
 }
 
-sub delete {
+sub remove {
     my ( $self, $key ) = @_;
-    $self->c->cache_delete( $key, @{ $self->meta } );
+    $self->c->cache_remove( $key, @{ $self->meta } );
 }
 
 __PACKAGE__;
@@ -53,7 +53,7 @@ __END__
 =head1 NAME
 
 Catalyst::Plugin::Cache::Curried - Curried versions of C<cache_set>,
-C<cache_get> and C<cache_delete> that look more like a backend.
+C<cache_get> and C<cache_remove> that look more like a backend.
 
 =head1 SYNOPSIS
 

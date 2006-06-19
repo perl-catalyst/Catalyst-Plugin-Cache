@@ -11,6 +11,8 @@ use ok "Catalyst::Plugin::Cache";
 {
     package MockApp;
     use base qw/Catalyst::Plugin::Cache/;
+    
+    sub registered_plugins {}
 
     my %config;
     sub config { \%config };

@@ -7,6 +7,7 @@ use strict;
 use warnings;
 
 use Scalar::Util ();
+use Catalyst::Utils ();
 use Carp ();
 use NEXT;
 
@@ -29,8 +30,75 @@ sub setup {
     $ret;
 }
 
-# don't die even if we don't have cache backends
-sub setup_cache_backends { shift->NEXT::setup_cache_backends(@_) }
+sub get_default_cache_backend_config {
+    my ( $app, $name ) = @_;
+    $app->config->{cache}{backend} || $app->get_cache_backend_config("default");
+}
+
+sub get_cache_backend_config {
+    my ( $app, $name ) = @_;
+    $app->config->{cache}{backends}{$name};
+}
+
+sub setup_cache_backends {
+    my $app = shift;
+
+    # give plugins a chance to find things for themselves
+    $app->NEXT::setup_cache_backends;
+
+    foreach my $name ( keys %{ $app->config->{cache}{backends} } ) {
+        next if $app->get_cache_backend( $name );
+        $app->setup_generic_cache_backend( $name, $app->get_cache_backend_config( $name ) || {} );
+    }
+
+    if ( !$app->get_cache_backend("default") and my $default_config = $app->get_default_cache_backend_config) {
+        $app->setup_generic_cache_backend( default => $default_config );
+    }
+}
+
+sub default_cache_store {
+    my $app = shift;
+    $app->config->{cache}{default_store} || $app->guess_default_cache_store;
+}
+
+sub guess_default_cache_store {
+    my $app = shift;
+
+    my @stores = map { /Cache::Store::(.*)$/ ? $1 : () } $app->registered_plugins;
+
+    if ( @stores == 1 ) {
+        return $stores[0];
+    } else {
+        Carp::croak "You must configure a default store type unless you use exactly one store plugin.";
+    }
+}
+
+sub setup_generic_cache_backend {
+    my ( $app, $name, $config ) = @_;
+    my %config = %$config;
+
+    if ( my $class = delete $config{class} ) {
+        $app->setup_cache_backend_by_class( $name, $class, %config );
+    } elsif ( my $store = delete $config->{store} || $app->default_cache_store ) {
+        my $method = lc("setup_${store}_cache_backend");
+
+        Carp::croak "You must load the $store cache store plugin (if it exists). ".
+        "Please consult the Catalyst::Plugin::Cache documentation on how to configure hetrogeneous stores."
+            unless $app->can($method);
+
+        $app->$method( $name, %config );
+    } else {
+        $app->log->warn("Couldn't setup the cache backend named '$name'");
+    }
+}
+
+sub setup_cache_backend_by_class {
+    my ( $app, $name, $class, @args ) = @_;
+    Catalyst::Utils::ensure_class_loaded( $class );
+    $app->register_cache_backend( $name => $class->new( @args ) );
+}
+
+# end of spaghetti setup DWIM
 
 sub cache {
     my ( $c, @meta ) = @_;
@@ -159,6 +227,26 @@ Catalyst::Plugin::Cache -
 	use Catalyst::Plugin::Cache;
 
 =head1 DESCRIPTION
+
+=head1 TERMINOLIGY
+
+=over 4
+
+=item backend
+
+An object that responds to the methods detailed in
+L<Catalyst::Plugin::Cache::Backend> (or more).
+
+=item store
+
+A generic "type" of backend. Typically a plugin used to construct backends.
+
+=item curried cache
+
+An object that responds to C<get>, C<set> and C<remove>, and will automatically
+add meta data to calls to C<< $c->cache_get >>, etc.
+
+=back
 
 =cut
 

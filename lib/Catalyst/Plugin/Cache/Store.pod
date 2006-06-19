@@ -1,0 +1,21 @@
+=pod
+
+=head1 NAME
+
+Catalyst::Plugin::Cache::Store - how to write a Cache store plugin.
+
+=head1 SYNOPSIS
+
+    package Catalyst::Plugin::Cache::Store::Frobnicator;
+
+    sub setup_frobnicator_cache_backend {
+        my ( $app, $name, $config ) = @_;
+
+        ....
+        
+        $app->register_cache_backend( $name => $cache_object );
+    }
+
+=head1 DESCRIPTION
+
+=cut

@@ -8,6 +8,8 @@ use Test::More 'no_plan';
 use ok "Catalyst::Plugin::Cache";
 use ok "Catalyst::Plugin::Cache::Choose::KeyRegexes";
 
+use Catalyst::Plugin::Cache::Backend::Memory;
+
 {
     package MockApp;
     use base qw/Catalyst::Plugin::Cache Catalyst::Plugin::Cache::Choose::KeyRegexes/;
@@ -21,23 +23,15 @@ use ok "Catalyst::Plugin::Cache::Choose::KeyRegexes";
         },
     );
     sub config { \%config }
-
-    package MemoryCache;
-    use Storable qw/freeze thaw/;
-    
-    sub new { bless {}, shift }
-    sub get { ${thaw($_[0]{$_[1]}) || return} };
-    sub set { $_[0]{$_[1]} = freeze(\$_[2]) };
-    sub remove { delete $_[0]{$_[1]} };
 }
 
 
 MockApp->setup;
 my $c = bless {}, "MockApp";
 
-MockApp->register_cache_backend( default => MemoryCache->new );
-MockApp->register_cache_backend( foo_store => MemoryCache->new );
-MockApp->register_cache_backend( bar_store => MemoryCache->new );
+MockApp->register_cache_backend( default => Catalyst::Plugin::Cache::Backend::Memory->new );
+MockApp->register_cache_backend( foo_store => Catalyst::Plugin::Cache::Backend::Memory->new );
+MockApp->register_cache_backend( bar_store => Catalyst::Plugin::Cache::Backend::Memory->new );
 
 is( $c->choose_cache_backend_wrapper( key => "baz" ), $c->default_cache_backend, "chose default" );
 is( $c->choose_cache_backend_wrapper( key => "foo" ), $c->get_cache_backend("foo_store"), "chose foo" );

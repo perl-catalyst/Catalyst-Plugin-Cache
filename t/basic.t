@@ -8,6 +8,8 @@ use Test::Exception;
 
 use ok "Catalyst::Plugin::Cache";
 
+use Catalyst::Plugin::Cache::Backend::Memory;
+
 {
     package MockApp;
     use base qw/Catalyst::Plugin::Cache/;
@@ -16,14 +18,6 @@ use ok "Catalyst::Plugin::Cache";
 
     my %config;
     sub config { \%config };
-
-    package MemoryCache;
-    use Storable qw/freeze thaw/;
-    
-    sub new { bless {}, shift }
-    sub get { ${thaw($_[0]{$_[1]}) || return} };
-    sub set { $_[0]{$_[1]} = freeze(\$_[2]) };
-    sub remove { delete $_[0]{$_[1]} };
 }
 
 MockApp->setup;
@@ -32,8 +26,8 @@ my $c = bless {}, "MockApp";
 can_ok( $c, "register_cache_backend" );
 can_ok( $c, "unregister_cache_backend" );
 
-MockApp->register_cache_backend( default => MemoryCache->new );
-MockApp->register_cache_backend( moose => MemoryCache->new );
+MockApp->register_cache_backend( default => Catalyst::Plugin::Cache::Backend::Memory->new );
+MockApp->register_cache_backend( moose => Catalyst::Plugin::Cache::Backend::Memory->new );
 
 can_ok( $c, "cache" );
 
@@ -75,7 +69,7 @@ is( $c->cache_get("foo"), "bar", "set" );
 $c->cache_remove( "foo" );
 is( $c->cache_get("foo"), undef, "remove" );
 
-MockApp->register_cache_backend( elk => MemoryCache->new );
+MockApp->register_cache_backend( elk => Catalyst::Plugin::Cache::Backend::Memory->new );
 
 is( $c->choose_cache_backend_wrapper( key => "foo" ), $c->default_cache_backend, "choose default" );
 is( $c->choose_cache_backend_wrapper( key => "foo", backend => "elk" ), $c->get_cache_backend("elk"), "override choice" );

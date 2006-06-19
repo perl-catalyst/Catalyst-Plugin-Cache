@@ -51,8 +51,9 @@ sub setup_cache_backends {
         $app->setup_generic_cache_backend( $name, $app->get_cache_backend_config( $name ) || {} );
     }
 
-    if ( !$app->get_cache_backend("default") and my $default_config = $app->get_default_cache_backend_config) {
-        $app->setup_generic_cache_backend( default => $default_config );
+    if ( !$app->get_cache_backend("default") ) {
+        local $@;
+        eval { $app->setup_generic_cache_backend( default => $app->get_default_cache_backend_config || {} ) };
     }
 }
 

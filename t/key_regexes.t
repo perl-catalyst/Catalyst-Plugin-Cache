@@ -39,26 +39,26 @@ MockApp->register_cache_backend( default => MemoryCache->new );
 MockApp->register_cache_backend( foo_store => MemoryCache->new );
 MockApp->register_cache_backend( bar_store => MemoryCache->new );
 
-is( $c->choose_cache_backend_wrapper( key => "baz" ), $c->cache, "chose default" );
-is( $c->choose_cache_backend_wrapper( key => "foo" ), $c->cache("foo_store"), "chose foo" );
-is( $c->choose_cache_backend_wrapper( key => "bar" ), $c->cache("bar_store"), "chose bar" );
+is( $c->choose_cache_backend_wrapper( key => "baz" ), $c->default_cache_backend, "chose default" );
+is( $c->choose_cache_backend_wrapper( key => "foo" ), $c->get_cache_backend("foo_store"), "chose foo" );
+is( $c->choose_cache_backend_wrapper( key => "bar" ), $c->get_cache_backend("bar_store"), "chose bar" );
 
 $c->cache_set( foo_laa => "laa" );
 $c->cache_set( bar_laa => "laa" );
 $c->cache_set( baz_laa => "laa" );
 
-is( $c->cache->get("baz_laa"), "laa", "non match stored in default" );
-is( $c->cache->get("foo_laa"), undef, "no foo key" );
-is( $c->cache->get("bar_laa"), undef, "no bar key" );
+is( $c->default_cache_backend->get("baz_laa"), "laa", "non match stored in default" );
+is( $c->default_cache_backend->get("foo_laa"), undef, "no foo key" );
+is( $c->default_cache_backend->get("bar_laa"), undef, "no bar key" );
 
 
-is( $c->cache("foo_store")->get("baz_laa"), undef, "no non match in foo store" );
-is( $c->cache("foo_store")->get("foo_laa"), "laa", "has foo key" );
-is( $c->cache("foo_store")->get("bar_laa"), undef, "no bar key" );
+is( $c->get_cache_backend("foo_store")->get("baz_laa"), undef, "no non match in foo store" );
+is( $c->get_cache_backend("foo_store")->get("foo_laa"), "laa", "has foo key" );
+is( $c->get_cache_backend("foo_store")->get("bar_laa"), undef, "no bar key" );
 
 
-is( $c->cache("bar_store")->get("baz_laa"), undef, "no non match in bar store" );
-is( $c->cache("bar_store")->get("foo_laa"), undef, "no foo key" );
-is( $c->cache("bar_store")->get("bar_laa"), "laa", "has bar key" );
+is( $c->get_cache_backend("bar_store")->get("baz_laa"), undef, "no non match in bar store" );
+is( $c->get_cache_backend("bar_store")->get("foo_laa"), undef, "no foo key" );
+is( $c->get_cache_backend("bar_store")->get("bar_laa"), "laa", "has bar key" );
 
 

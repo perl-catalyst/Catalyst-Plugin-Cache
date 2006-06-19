@@ -12,6 +12,9 @@ use ok "Catalyst::Plugin::Cache";
     package MockApp;
     use base qw/Catalyst::Plugin::Cache/;
 
+    my %config;
+    sub config { \%config };
+
     package MemoryCache;
     use Storable qw/freeze thaw/;
     
@@ -56,7 +59,6 @@ dies_ok {
 
 
 can_ok( $c, "default_cache_backend" );
-is( $c->default_cache_backend, $c->cache, "cache with no args retrurns default" );
 
 can_ok( $c, "choose_cache_backend_wrapper" );
 can_ok( $c, "choose_cache_backend" );
@@ -81,3 +83,8 @@ $c->cache_set( foo => "gorch", backend => "elk" );
 is( $c->cache_get("foo"), undef, "set to custom backend (get from non custom)" );
 is( $c->cache_get("foo", backend => "elk"), "gorch", "set to custom backend (get from custom)" );
 
+my $cache_elk = $c->cache( backend => "elk" );
+my $cache_norm = $c->cache();
+
+is( $cache_norm->get("foo"), undef, "default curried cache has no foo");
+is( $cache_elk->get("foo"), "gorch", "curried custom backend has foo" );

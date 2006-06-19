@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 
 package Catalyst::Plugin::Cache;
-use base qw/Class::Data::Inheritable/;
+use base qw/Class::Data::Inheritable Class::Accessor::Fast/;
 
 use strict;
 use warnings;
@@ -10,7 +10,10 @@ use Scalar::Util ();
 use Carp ();
 use NEXT;
 
+use Catalyst::Plugin::Cache::Curried;
+
 __PACKAGE__->mk_classdata( "_cache_backends" );
+__PACKAGE__->mk_accessors( "_default_curried_cache" );
 
 sub setup {
     my $app = shift;
@@ -26,17 +29,39 @@ sub setup {
     $ret;
 }
 
+# don't die even if we don't have cache backends
 sub setup_cache_backends { shift->NEXT::setup_cache_backends(@_) }
 
 sub cache {
-    my $c = shift;
+    my ( $c, @meta ) = @_;
 
-    if ( @_ ) {
-        my $name = shift;
-        $c->get_cache_backend($name);
+    if ( @meta == 1 ) {
+        my $name = $meta[0];
+        return ( $c->get_preset_curried($name) || $c->get_cache_backend($name) );
+    } elsif ( !@meta ) {
+        # be nice and always return the same one for the simplest case
+        return ( $c->_default_curried_cache || $c->_default_curried_cache( $c->curry_cache( @meta ) ) );
     } else {
-        $c->default_cache_backend;
+        return $c->curry_cache( @meta );
     }
+}
+
+sub curry_cache {
+    my ( $c, @meta ) = @_;
+    return Catalyst::Plugin::Cache::Curried->new( $c, @meta );
+}
+
+sub get_preset_curried {
+    my ( $c, $name ) = @_;
+
+    if ( ref( my $preset = $c->config->{cache}{profiles}{$name} ) ) {
+        return $preset if Scalar::Util::blessed($preset);
+
+        my @meta = ( ( ref $preset eq "HASH" ) ? %$preset : @$preset );
+        return $c->curry_cache( @meta );
+    }
+
+    return;
 }
 
 sub get_cache_backend {

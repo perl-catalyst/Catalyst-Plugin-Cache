@@ -4,6 +4,7 @@ use strict;
 use warnings;
 
 use Test::More 'no_plan';
+use Test::Deep qw/superhashof cmp_deeply/;
 
 use Scalar::Util qw/refaddr/;
 
@@ -45,7 +46,7 @@ is( refaddr($c->cache), refaddr($c->cache), "default cache is memoized, so it is
 
 isa_ok( $c->cache("foo"), "Catalyst::Plugin::Cache::Curried", "cache('foo')" );
 
-is_deeply( $c->cache("foo")->meta, [ bah => "foo" ], "meta is in place" ); 
+cmp_deeply( { @{ $c->cache("foo")->meta } }, superhashof({ bah => "foo" }), "meta is in place" ); 
 
 is( refaddr( $c->cache("bar") ), refaddr( $c->cache("bar") ), "since bar is hard coded as an object it's always the same" );
 

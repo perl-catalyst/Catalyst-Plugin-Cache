@@ -57,9 +57,6 @@ C<cache_get> and C<cache_remove> that look more like a backend.
 
 =head1 SYNOPSIS
 
-	sub begin : Private {
-
-    }
 
 =head1 DESCRIPTION
 

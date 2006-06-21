@@ -115,9 +115,19 @@ sub cache {
     }
 }
 
+sub construct_curried_cache {
+    my ( $c, @meta ) = @_;
+    return $c->curried_cache_class( @meta )->new( @meta );
+}
+
+sub curried_cache_class {
+    my ( $c, @meta ) = @_;
+    $c->config->{cache}{curried_class} || "Catalyst::Plugin::Cache::Curried";
+}
+
 sub curry_cache {
     my ( $c, @meta ) = @_;
-    return Catalyst::Plugin::Cache::Curried->new( $c, @meta );
+    return $c->construct_curried_cache( $c, $c->_cache_caller_meta, @meta );
 }
 
 sub get_preset_curried {
@@ -164,6 +174,28 @@ sub temporary_cache_backend {
     die "FIXME - make up an in memory cache backend, that hopefully works well for the current engine";
 }
 
+sub _cache_caller_meta {
+    my $c = shift;
+
+    my ( $caller, $component, $controller );
+    
+    for my $i ( 0 .. 15 ) { # don't look to far
+        my @info = caller(2 + $i) or last;
+
+        $caller     ||= \@info unless $info[0] =~ /Catalyst::Plugin::Cache/;
+        $component  ||= \@info if $info[0]->isa("Catalyst::Component");
+        $controller ||= \@info if $info[0]->isa("Catalyst::Controller");
+    
+        last if $caller && $component && $controller;
+    }
+
+    return (
+        'caller'   => $caller,
+        component  => $component,
+        controller => $controller,
+    );
+}
+
 # this gets a shit name so that the plugins can override a good name
 sub choose_cache_backend_wrapper {
     my ( $c, @meta ) = @_;
@@ -171,6 +203,11 @@ sub choose_cache_backend_wrapper {
     Carp::croak("meta data must be an even sized list") unless @meta % 2 == 0;
 
     my %meta = @meta;
+
+    unless ( exists $meta{'caller'} ) {
+        my %caller = $c->_cache_caller_meta;
+        @meta{keys %caller} = values %caller;
+    }
     
     # allow the cache client to specify who it wants to cache with (but loeave room for a hook)
     if ( exists $meta{backend} ) {
@@ -181,9 +218,6 @@ sub choose_cache_backend_wrapper {
         }
     };
     
-
-    $meta{caller} = [ caller(2) ] unless exists $meta{caller}; # might be interesting
-
     if ( my $chosen = $c->choose_cache_backend( %meta ) ) {
         $chosen = $c->get_cache_backend( $chosen ) unless Scalar::Util::blessed($chosen); # if it's a name find it
         return $chosen if Scalar::Util::blessed($chosen); # only return if it was an object or name lookup worked
@@ -225,9 +259,41 @@ Catalyst::Plugin::Cache -
 
 =head1 SYNOPSIS
 
-	use Catalyst::Plugin::Cache;
+	use Catalyst qw/
+        Cache
+    /;
+
+    # configure a backend or use a store plugin 
+    __PACKAGE__->config( cache => {
+        backend => {
+            class => "Cache::Bounded",
+            # ... params ...
+        },
+    });
+
+    # ... in a controller
+
+    sub foo : Local {
+        my ( $self, $c, $id ) = @_;
+
+        my $cache = $c->cache;
+
+        my $result;
+
+        unless ( $result = $cache->get( $id ) ) {
+            # ... calulate result ...
+            $c->cache->set( $id, $result );
+        }
+    };
 
 =head1 DESCRIPTION
+
+This plugin allows you to use a very simple configuration API without losing
+the possibility of flexibility when you need it later.
+
+Amongst it's features are support for multiple backends, segmentation based on
+component or controller, keyspace partitioning and so forth, in various sub
+plugins.
 
 =head1 TERMINOLIGY
 
@@ -240,7 +306,7 @@ L<Catalyst::Plugin::Cache::Backend> (or more).
 
 =item store
 
-A generic "type" of backend. Typically a plugin used to construct backends.
+A plugin that provides backends of a certain type. This is a bit like a factory.
 
 =item curried cache
 

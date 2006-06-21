@@ -295,7 +295,47 @@ Amongst it's features are support for multiple backends, segmentation based on
 component or controller, keyspace partitioning and so forth, in various sub
 plugins.
 
-=head1 TERMINOLIGY
+=head1 CONFIGURATION
+
+  $c->config->{cache} = {
+    backend => '',
+  };
+
+All configuration parameters should be provided in a hash reference under the
+C<cache> key in the C<config> hash.
+
+=over 4
+
+=item class
+
+Load an entire set of Caching modules.
+
+=item backend
+
+The specific backend you want to use.
+
+=item backends
+
+A hashref with backend names as keys, and module names as values. One of these
+should have the key "default" to indicate the default backend.
+
+=item default_store
+
+The store you are using. This must be supplied if you have loaded multiple
+store plugins.
+
+=item curried_class
+
+The currying class you are using, defaults to L<Catalyst::Plugin::Cache::Curried>.
+
+=item profiles
+
+Supply your own predefined profiles for cache namespacing.
+ 
+
+=back
+
+=head1 TERMINOLOGY
 
 =over 4
 
@@ -308,7 +348,18 @@ L<Catalyst::Plugin::Cache::Backend> (or more).
 
 A plugin that provides backends of a certain type. This is a bit like a factory.
 
+=item cache
+
+Stored key/value pairs of data for easy re-access.
+
 =item curried cache
+
+  my $cache = $c->cache(type => 'thumbnails');
+  $cache->set('pic01', $thumbnaildata);
+
+A cache which has been pre-configured with a particular set of namespacing
+data. In the example the cache returned could be one specifically tuned
+for storing thumbnails.
 
 An object that responds to C<get>, C<set> and C<remove>, and will automatically
 add meta data to calls to C<< $c->cache_get >>, etc.

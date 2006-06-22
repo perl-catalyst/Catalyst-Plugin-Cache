@@ -580,6 +580,20 @@ add meta data to calls to C<< $c->cache_get >>, etc.
 
 =back
 
+=head1 SEE ALSO
+
+L<Cache> - the generic cache api on the CPAN.
+
+L<Catalyst::Plugin::Cache::Store> - how to write a store plugin.
+
+L<Catalyst::Plugin::Cache::Curried> - the interface for curried caches.
+
+L<Catalyst::Plugin::Cache::Choose::KeyRegexes> - choose a backend based on
+regex matching on the keys. Can be used to partition the keyspace.
+
+L<Catalyst::Plugin::Cache::ControllerNamespacing> - wrap backend objects in a
+name mangler so that every controller get's it's own keyspace.
+
 =cut
 
 

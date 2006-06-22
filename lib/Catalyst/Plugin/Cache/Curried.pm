@@ -26,7 +26,7 @@ sub new {
 
 sub backend {
     my ( $self, @meta ) = @_;
-    $self->c->choose_cache_backend( @{ $self->meta }, key => $key, @meta )
+    $self->c->choose_cache_backend( @{ $self->meta }, @meta )
 }
 
 sub set {

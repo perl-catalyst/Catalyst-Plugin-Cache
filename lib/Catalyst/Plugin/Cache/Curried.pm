@@ -25,22 +25,22 @@ sub new {
 }
 
 sub backend {
-    my ( $self, $key ) = @_;
-    $self->c->choose_cache_backend( @{ $self->meta }, key => $key )
+    my ( $self, @meta ) = @_;
+    $self->c->choose_cache_backend( @{ $self->meta }, key => $key, @meta )
 }
 
 sub set {
-    my ( $self, $key, $value ) = @_;
-    $self->c->cache_set( $key, $value, @{ $self->meta } );
+    my ( $self, $key, $value, @meta ) = @_;
+    $self->c->cache_set( $key, $value, @{ $self->meta }, @meta );
 }
 
 sub get {
-    my ( $self, $key ) = @_;
+    my ( $self, $key, @meta ) = @_;
     $self->c->cache_get( $key, @{ $self->meta } );
 }
 
 sub remove {
-    my ( $self, $key ) = @_;
+    my ( $self, $key, @meta ) = @_;
     $self->c->cache_remove( $key, @{ $self->meta } );
 }
 
@@ -57,8 +57,46 @@ C<cache_get> and C<cache_remove> that look more like a backend.
 
 =head1 SYNOPSIS
 
+    my $curried = $c->cache( %meta );
+
+    $curried->get( $key, $value ); # no need to specify %meta
 
 =head1 DESCRIPTION
+
+See L<Catalyst::Plugin::Cache/META DATA> for details.
+
+=head1 METHODS
+
+=over 4
+
+=item new %meta
+
+Create a new curried cache, that captures C<%meta>.
+
+=item backend %additional_meta
+
+This calls C<choose_cache_backend> on the $c object with the captured meta and
+the additional meta.
+
+=item set $key, $value, %additional_meta
+
+=item get $key, %additional_meta
+
+=item remove $key, %additional_meta
+
+Dellegate to the C<c> object's C<cache_set>, C<cache_get> or C<cache_remove>
+with the arguments, then the captured meta from C<meta>, and then the
+additional meta.
+
+=item meta
+
+Returns the array ref that captured %meta from C<new>.
+
+=item c
+
+The captured $c object to delegate to.
+
+=back
 
 =cut
 

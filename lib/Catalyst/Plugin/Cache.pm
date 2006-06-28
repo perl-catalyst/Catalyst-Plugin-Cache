@@ -206,7 +206,7 @@ sub _cache_caller_meta {
 sub choose_cache_backend_wrapper {
     my ( $c, @meta ) = @_;
 
-    Carp::croak("meta data must be an even sized list") unless @meta % 2 == 0;
+    Carp::croak("metadata must be an even sized list") unless @meta % 2 == 0;
 
     my %meta = @meta;
 
@@ -275,7 +275,7 @@ Catalyst::Plugin::Cache - Flexible caching support for Catalyst.
         # ... params ...
     };
 
-    # ... in a controller
+    # In a controller:
 
     sub foo : Local {
         my ( $self, $c, $id ) = @_;
@@ -285,19 +285,20 @@ Catalyst::Plugin::Cache - Flexible caching support for Catalyst.
         my $result;
 
         unless ( $result = $cache->get( $id ) ) {
-            # ... calulate result ...
+            # ... calculate result ...
             $c->cache->set( $id, $result );
         }
     };
 
 =head1 DESCRIPTION
 
-This plugin allows you to use a very simple configuration API without losing
-the possibility of flexibility when you need it later.
+This plugin gives you access to a variety of systems for caching
+data. It allows you to use a very simple configuration API, while
+maintaining the possibility of flexibility when you need it later.
 
-Amongst it's features are support for multiple backends, segmentation based on
-component or controller, keyspace partitioning and so forth, in various sub
-plugins.
+Among its features are support for multiple backends, segmentation based
+on component or controller, keyspace partitioning, and so more, in
+various subsidiary plugins.
 
 =head1 METHODS
 
@@ -307,23 +308,23 @@ plugins.
 
 =item cache %meta
 
-Return a curried object with meta data from $profile_name or as explicitly
-specified.
+Return a curried object with metadata from C<$profile_name> or as
+explicitly specified.
 
-If a profile by the name $profile_name doesn't exist but a backend object by
-that name does exist, the backend will be returned instead, since the interface
-for curried caches and backends is almost identical.
+If a profile by the name C<$profile_name> doesn't exist, but a backend
+object by that name does exist, the backend will be returned instead,
+since the interface for curried caches and backends is almost identical.
 
-This method can also be called without arguments, in which case is treated as
-though the %meta hash was empty.
+This method can also be called without arguments, in which case is
+treated as though the C<%meta> hash was empty.
 
-See L</META DATA> for details.
+See L</METADATA> for details.
 
 =item curry_cache %meta
 
-Return a L<Catalyst::Plugin::Cache::Curried> object, curried with %meta.
+Return a L<Catalyst::Plugin::Cache::Curried> object, curried with C<%meta>.
 
-See L</META DATA> for details.
+See L</METADATA> for details.
 
 =item cache_set $key, $value, %meta
 
@@ -331,13 +332,14 @@ See L</META DATA> for details.
 
 =item cache_remove $key, %meta
 
-These cache operations will call L<choose_cache_backend> with %meta, and then
-call C<set>, C<get> or C<remove> on the resulting backend object.
+These cache operations will call L<choose_cache_backend> with %meta, and
+then call C<set>, C<get>, or C<remove> on the resulting backend object.
 
 =item choose_cache_backend %meta
 
-Select a backend object. This should return undef if no specific backend was
-selected - it's caller will handle getting C<default_cache_backend> on it's own.
+Select a backend object. This should return undef if no specific backend
+was selected - its caller will handle getting C<default_cache_backend>
+on its own.
 
 This method is typically used by plugins.
 
@@ -351,38 +353,39 @@ Return the default backend object.
 
 =item temporary_cache_backend
 
-When no default cache backend is configured this method might return a backend
-known to work well with the current L<Catalyst::Engine>. This is a stup.
+When no default cache backend is configured this method might return a
+backend known to work well with the current L<Catalyst::Engine>. This is
+a stub.
 
 =item 
 
 =back
 
-=head1 META DATA
+=head1 METADATA
 
 =head2 Introduction
 
-Whenever you set or retrieve a key you may specify additional meta data that
-will be used to select a specific backend.
+Whenever you set or retrieve a key you may specify additional metadata
+that will be used to select a specific backend.
 
 This metadata is very freeform, and the only key that has any meaning by
 default is the C<backend> key which can be used to explicitly choose a backend
 by name.
 
-The C<choose_cache_backend> method can be overridden in order to facilitate
-more intelligent backend selection. For example,
-L<Catalyst::Plugin::Cache::Choose::KeyRegexes> overrides that method to select
-a backend based on key regexes.
+The C<choose_cache_backend> method can be overridden in order to
+facilitate more intelligent backend selection. For example,
+L<Catalyst::Plugin::Cache::Choose::KeyRegexes> overrides that method to
+select a backend based on key regexes.
 
-Another example is a L<Catalyst::Plugin::Cache::ControllerNamespacing>, which
-that wraps backends in objects that perform key mangling, in order to keep
-caches namespaced per controller.
+Another example is a L<Catalyst::Plugin::Cache::ControllerNamespacing>,
+which wraps backends in objects that perform key mangling, in order to
+keep caches namespaced per controller.
 
 However, this is generally left as a hook for larger, more complex
-applications. Most configurations should make due 
+applications. Most configurations should make due XXXX
 
-The simplest way to dynamically select a backend is based on the L</Cache
-Profiles> configuratrion.
+The simplest way to dynamically select a backend is based on the
+L</Cache Profiles> configuration.
 
 =head2 Meta Data Keys
 
@@ -392,11 +395,11 @@ C<choose_cache_backend> is called with some default keys.
 
 =item key
 
-Supplied by C<cache_get>, C<cache_set> and C<cache_remove>.
+Supplied by C<cache_get>, C<cache_set>, and C<cache_remove>.
 
 =item value
 
-Supplied by C<cache_set>
+Supplied by C<cache_set>.
 
 =item caller
 
@@ -409,7 +412,8 @@ The entire C<caller($i)> frame of C<caller>.
 
 =item component
 
-The package name of the innermost caller who C<isa> L<Catalyst::Component>.
+The package name of the innermost caller who C<isa>
+L<Catalyst::Component>.
 
 =item component_frame
 
@@ -417,7 +421,8 @@ This entire C<caller($i)> frame of C<component>.
 
 =item controller
 
-The package name of the innermost caller who C<isa> L<Catalyst::Controller>.
+The package name of the innermost caller who C<isa>
+L<Catalyst::Controller>.
 
 =item controller_frame
 
@@ -425,13 +430,13 @@ This entire C<caller($i)> frame of C<controller>.
 
 =back
 
-=head2 Meta Data Currying
+=head2 Metadata Currying
 
-In order to avoid specifying %meta over and over again you may call C<cache> or
-C<curry_cache> with %meta once, and get back a B<curried cache object>. This
-object responds to the methods C<get>, C<set> and C<remove>, by appending it's
-captured meta data and delegating them to C<cache_get>, C<cache_set> and
-C<cache_remove>.
+In order to avoid specifying C<%meta> over and over again you may call
+C<cache> or C<curry_cache> with C<%meta> once, and get back a B<curried
+cache object>. This object responds to the methods C<get>, C<set>, and
+C<remove>, by appending its captured metadata and delegating them to
+C<cache_get>, C<cache_set>, and C<cache_remove>.
 
 This is simpler than it sounds.
 
@@ -457,16 +462,16 @@ See L<Catalyst::Plugin::Cache::Curried> for details.
         ...
     };
 
-All configuration parameters should be provided in a hash reference under the
-C<cache> key in the C<config> hash.
+All configuration parameters should be provided in a hash reference
+under the C<cache> key in the C<config> hash.
 
 =head2 Backend Configuration
 
 Configuring backend objects is done by adding hash entries under the
-C<backends> keys in the main config.
+C<backends> key in the main config.
 
-A special case is that the hash key under the C<backend> (singular) key of the
-main config is assumed to be the backend named C<default>.
+A special case is that the hash key under the C<backend> (singular) key
+of the main config is assumed to be the backend named C<default>.
 
 =over 4
 
@@ -481,7 +486,7 @@ Instantiate a backend from a L<Cache> compatible class. E.g.
     };
     
     $c->config->{cache}{backends}{large_things} = {
-        class => "Cache::Memcached::Mangaed",
+        class => "Cache::Memcached::Managed",
         data  => '1.2.3.4:1234',
     };
 
@@ -491,17 +496,17 @@ The class will be C<required> as necessary during setup time.
 
 =item store
 
-Instrantiate a backend using a store plugin, e.g.
+Instantiate a backend using a store plugin, e.g.
 
     $c->config->{cache}{backend} = {
         store => "FastMmap",
     };
 
-Store plugins typically require less configuration because they are specialized
-for L<Catalyst> applications. For example
+Store plugins typically require less configuration because they are
+specialized for L<Catalyst> applications. For example
 L<Catalyst::Plugin::Cache::Store::FastMmap> will specify a default
-C<share_file>, and additionally use a subclass of L<Cache::FastMmap> that can
-also store non reference data.
+C<share_file>, and additionally use a subclass of L<Cache::FastMmap>
+that can also store non reference data.
 
 The store plugin must be loaded.
 
@@ -513,8 +518,8 @@ The store plugin must be loaded.
 
 =item profiles
 
-Supply your own predefined profiles for cache metadata, when using the C<cache>
-method.
+Supply your own predefined profiles for cache metadata, when using the
+C<cache> method.
 
 For example when you specify
 
@@ -532,15 +537,15 @@ It is the same as if you had done:
 
 =back
 
-=head2 Misc Configuration
+=head2 Miscellaneous Configuration
 
 =over 4
 
 =item default_store
 
-When you do not specify a C<store> parameter in the backend configuration this
-one will be used instead. This configuration parameter is not necessary if only
-one store plugin is loaded.
+When you do not specify a C<store> parameter in the backend
+configuration this one will be used instead. This configuration
+parameter is not necessary if only one store plugin is loaded.
 
 =back
 
@@ -555,34 +560,35 @@ L<Catalyst::Plugin::Cache::Backend> (or more).
 
 =item store
 
-A plugin that provides backends of a certain type. This is a bit like a factory.
+A plugin that provides backends of a certain type. This is a bit like a
+factory.
 
 =item cache
 
 Stored key/value pairs of data for easy re-access.
 
-=item meta data
+=item metadata
 
-"extra" information about the item being stored, which can be used to locate an
-appropriate backend.
+"Extra" information about the item being stored, which can be used to
+locate an appropriate backend.
 
 =item curried cache
 
   my $cache = $c->cache(type => 'thumbnails');
   $cache->set('pic01', $thumbnaildata);
 
-A cache which has been pre-configured with a particular set of namespacing
-data. In the example the cache returned could be one specifically tuned
-for storing thumbnails.
+A cache which has been pre-configured with a particular set of
+namespacing data. In the example the cache returned could be one
+specifically tuned for storing thumbnails.
 
-An object that responds to C<get>, C<set> and C<remove>, and will automatically
-add meta data to calls to C<< $c->cache_get >>, etc.
+An object that responds to C<get>, C<set>, and C<remove>, and will
+automatically add metadata to calls to C<< $c->cache_get >>, etc.
 
 =back
 
 =head1 SEE ALSO
 
-L<Cache> - the generic cache api on the CPAN.
+L<Cache> - the generic cache API on CPAN.
 
 L<Catalyst::Plugin::Cache::Store> - how to write a store plugin.
 
@@ -592,7 +598,7 @@ L<Catalyst::Plugin::Cache::Choose::KeyRegexes> - choose a backend based on
 regex matching on the keys. Can be used to partition the keyspace.
 
 L<Catalyst::Plugin::Cache::ControllerNamespacing> - wrap backend objects in a
-name mangler so that every controller get's it's own keyspace.
+name mangler so that every controller gets its own keyspace.
 
 =cut
 

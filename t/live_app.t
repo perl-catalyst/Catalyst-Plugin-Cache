@@ -18,10 +18,10 @@ use Test::WWW::Mechanize::Catalyst "CacheTestApp";
 
 my $ua = Test::WWW::Mechanize::Catalyst->new;
 
-$ua->get_ok("/bar");
+$ua->get_ok("http://localhost/bar");
 $ua->content_is("not found");
 
-$ua->get_ok("/foo");
+$ua->get_ok("http://localhost//foo");
 
-$ua->get_ok("/bar");
+$ua->get_ok("http://localhost/bar");
 $ua->content_is("Foo");

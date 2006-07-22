@@ -602,6 +602,16 @@ regex matching on the keys. Can be used to partition the keyspace.
 L<Catalyst::Plugin::Cache::ControllerNamespacing> - wrap backend objects in a
 name mangler so that every controller gets its own keyspace.
 
-=cut
+=head1 AUTHOR
 
+Yuval Kogman, C<nothingmuch@woobling.org>
+
+=head1 COPYRIGHT & LICENSE
+
+Copyright (c) Yuval Kogman, 2006. All rights reserved.
+
+This library is free software, you can redistribute it and/or modify it under
+the same terms as Perl itself, as well as under the terms of the MIT license.
+
+=cut
 

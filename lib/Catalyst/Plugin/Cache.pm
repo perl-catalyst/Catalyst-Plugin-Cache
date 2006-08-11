@@ -81,7 +81,7 @@ sub setup_generic_cache_backend {
     my %config = %$config;
 
     if ( my $class = delete $config{class} ) {
-        $app->setup_cache_backend_by_class( $name, $class, %config );
+        $app->setup_cache_backend_by_class( $name, $class, \%config );
     } elsif ( my $store = delete $config->{store} || $app->default_cache_store ) {
         my $method = lc("setup_${store}_cache_backend");
 
@@ -89,7 +89,7 @@ sub setup_generic_cache_backend {
         "Please consult the Catalyst::Plugin::Cache documentation on how to configure hetrogeneous stores."
             unless $app->can($method);
 
-        $app->$method( $name, %config );
+        $app->$method( $name, \%config );
     } else {
         $app->log->warn("Couldn't setup the cache backend named '$name'");
     }

@@ -13,6 +13,7 @@ my $build = Module::Build->new(
         'Test::More'        => 0,
         'Test::Exception'   => 0,
         'Task::Weaken'      => 0,
+        'Test::use::ok'     => 0,
     },
     create_readme => 1,
     sign          => 1,

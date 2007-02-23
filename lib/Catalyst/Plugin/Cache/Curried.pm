@@ -31,6 +31,7 @@ sub backend {
 
 sub set {
     my ( $self, $key, $value, @meta ) = @_;
+    @meta = ( expires => $meta[0] ) if @meta == 1;
     $self->c->cache_set( $key, $value, @{ $self->meta }, @meta );
 }
 

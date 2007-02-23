@@ -241,8 +241,9 @@ sub choose_cache_backend_wrapper {
 sub choose_cache_backend { shift->NEXT::choose_cache_backend( @_ ) } # a convenient fallback
 
 sub cache_set {
-    my ( $c, $key, $value, @meta ) = @_;
-    $c->choose_cache_backend_wrapper( key =>  $key, value => $value, @meta )->set( $key, $value );
+    my ( $c, $key, $value, %meta ) = @_;
+    $c->choose_cache_backend_wrapper( key =>  $key, value => $value, %meta )
+        ->set( $key, $value, exists $meta{expires} ? $meta{expires} : () );
 }
 
 sub cache_get {

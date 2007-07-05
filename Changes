@@ -1,3 +1,6 @@
+0.03
+        - Be more compatible with ->set() convention of passing expiry
+
 0.02
         - Pass around a hash ref instead of a list of kvp.
 

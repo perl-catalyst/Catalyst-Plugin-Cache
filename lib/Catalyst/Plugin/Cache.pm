@@ -6,7 +6,7 @@ use base qw/Class::Data::Inheritable Class::Accessor::Fast/;
 use strict;
 use warnings;
 
-our $VERSION = "0.02";
+our $VERSION = "0.03";
 
 use Scalar::Util ();
 use Catalyst::Utils ();

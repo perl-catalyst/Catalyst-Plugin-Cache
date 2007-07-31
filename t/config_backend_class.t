@@ -14,6 +14,7 @@ use ok "Catalyst::Plugin::Cache";
     package MyCache;
     sub new {
         my ( $class, $p ) = @_;
+        die unless ref $p;
         bless { %$p }, $class;
     }
     sub get {}

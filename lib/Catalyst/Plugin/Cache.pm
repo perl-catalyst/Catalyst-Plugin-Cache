@@ -6,7 +6,7 @@ use base qw/Class::Data::Inheritable Class::Accessor::Fast/;
 use strict;
 use warnings;
 
-our $VERSION = "0.03";
+our $VERSION = "0.04";
 
 use Scalar::Util ();
 use Catalyst::Utils ();
@@ -81,7 +81,11 @@ sub setup_generic_cache_backend {
     my %config = %$config;
 
     if ( my $class = delete $config{class} ) {
-        $app->setup_cache_backend_by_class( $name, $class, \%config );
+        eval { $app->setup_cache_backend_by_class( $name, $class, %config ) }
+            ||
+        eval { $app->setup_cache_backend_by_class( $name, $class, \%config ) }
+            ||
+        die "Couldn't construct $class with either list style or hash ref style param passing: $@";
     } elsif ( my $store = delete $config->{store} || $app->default_cache_store ) {
         my $method = lc("setup_${store}_cache_backend");
 

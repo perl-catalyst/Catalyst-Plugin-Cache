@@ -493,7 +493,7 @@ Instantiate a backend from a L<Cache> compatible class. E.g.
     };
     
     $c->config->{cache}{backends}{large_things} = {
-        class => "Cache::Memcached::Managed",
+        class => "Cache::Memcached",
         data  => '1.2.3.4:1234',
     };
 

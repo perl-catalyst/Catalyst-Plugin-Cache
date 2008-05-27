@@ -54,8 +54,18 @@ sub setup_cache_backends {
     }
 
     if ( !$app->get_cache_backend("default") ) {
-        local $@;
-        eval { $app->setup_generic_cache_backend( default => $app->get_default_cache_backend_config || {} ) };
+        ### XXX currently we dont have a fallback scenario
+        ### so die here with the error message. Once we have
+        ### an in memory fallback, we may consider silently
+        ### logging the error and falling back to that.
+        ### If we dont die here, the app will silently start
+        ### up and then explode at the first cache->get or
+        ### cache->set request with a FIXME error
+        #local $@;
+        #eval { 
+        $app->setup_generic_cache_backend( default => $app->get_default_cache_backend_config || {} );
+        #};
+        
    }
 }
 
@@ -81,11 +91,22 @@ sub setup_generic_cache_backend {
     my %config = %$config;
 
     if ( my $class = delete $config{class} ) {
-        eval { $app->setup_cache_backend_by_class( $name, $class, %config ) }
-            ||
-        eval { $app->setup_cache_backend_by_class( $name, $class, \%config ) }
-            ||
-        die "Couldn't construct $class with either list style or hash ref style param passing: $@";
+        
+        ### try as list and as hashref, collect the
+        ### error if things go wrong
+        ### if all goes well, exit the loop
+        my @errors;
+        for my $aref ( [%config], [\%config] ) {
+            eval { $app->setup_cache_backend_by_class( 
+                        $name, $class, @$aref 
+                    );
+            } ? do { @errors = (); last }
+              : push @errors, "\t$@";
+        }
+        
+        ### and die with the errors if we have any
+        die "Couldn't construct $class with either list style or hash ref style param passing:\n @errors" if @errors;
+        
     } elsif ( my $store = delete $config->{store} || $app->default_cache_store ) {
         my $method = lc("setup_${store}_cache_backend");
 
@@ -279,8 +300,16 @@ Catalyst::Plugin::Cache - Flexible caching support for Catalyst.
     # configure a backend or use a store plugin 
     __PACKAGE__->config->{cache}{backend} = {
         class => "Cache::Bounded",
-        # ... params ...
+        # ... params for Cache::Bounded...
     };
+
+    # typical example for Cache::Memcached::libmemcached
+    __PACKAGE__->config->{cache}{backend} = {
+        class   => "Cache::Memcached::libmemcached",
+        servers => ['127.0.0.1:11211'],
+        debug   => 2,
+    };
+
 
     # In a controller:
 

@@ -22,11 +22,18 @@ use ok "Catalyst::Plugin::Cache";
                 },
                 bar => bless( {}, "SomeClass" ),
             },
+            ### as of 0.06, we need a specific backend
+            ### specified
+            backend => { 
+                class   => 'SomeClass',
+            }
         },
     );
     sub config { \%config };
 
     package SomeClass;
+    ### backend must have a constructor
+    sub new { bless {}, shift };
     sub get {}
     sub set {}
     sub remove {}

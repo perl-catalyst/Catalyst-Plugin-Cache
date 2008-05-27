@@ -16,7 +16,16 @@ use Catalyst::Plugin::Cache::Backend::Memory;
     
     sub registered_plugins {}
 
-    my %config;
+    ### must register a backend class as of 0.06
+    ### the previous code simply ignored a croak
+    ### this is still in line with the documentation.
+    my %config = (
+        cache   => { 
+            backend => { 
+                class   => 'Catalyst::Plugin::Cache::Backend::Memory',
+            }
+        }            
+    );
     sub config { \%config };
 }
 

@@ -20,6 +20,10 @@ use Catalyst::Plugin::Cache::Backend::Memory;
                 qr/^foo/ => "foo_store",
                 qr/^bar/ => "bar_store",
             ],
+            ### as of 0.06, you must specify a backend
+            backend => { 
+                class   => 'Catalyst::Plugin::Cache::Backend::Memory',
+            }
         },
     );
     sub config { \%config }

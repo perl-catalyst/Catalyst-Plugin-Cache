@@ -1,3 +1,8 @@
+0.06
+        - clarify the documentation on how to configure a backend
+        - due to stacked evals, certain start up errors were quietly
+          ignored until the first cache hit. These start up errors
+          now correctly manifest themselves at start up time.
 0.05
         - change base class order to appease Class::C3
 

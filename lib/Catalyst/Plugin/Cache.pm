@@ -6,7 +6,7 @@ use base qw(Class::Accessor::Fast Class::Data::Inheritable);
 use strict;
 use warnings;
 
-our $VERSION = "0.05";
+our $VERSION = "0.06";
 
 use Scalar::Util ();
 use Catalyst::Utils ();
@@ -639,6 +639,8 @@ name mangler so that every controller gets its own keyspace.
 =head1 AUTHOR
 
 Yuval Kogman, C<nothingmuch@woobling.org>
+
+Jos Boumans, C<kane@cpan.org>
 
 =head1 COPYRIGHT & LICENSE
 

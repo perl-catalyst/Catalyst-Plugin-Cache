@@ -36,6 +36,11 @@ Catalyst::Plugin::Cache::Backend::Memory - Stupid memory based caching backend.
 
 =head1 DESCRIPTION
 
+This backend uses L<Storable> to cache data in memory.
+
+In combination with an engine like FastCGI/mod_perl/prefork which calls fork()
+your cache will get async because child processes don't share cache in memory.
+
 =cut
 
 

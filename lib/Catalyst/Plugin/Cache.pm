@@ -11,7 +11,7 @@ our $VERSION = "0.06";
 use Scalar::Util ();
 use Catalyst::Utils ();
 use Carp ();
-use NEXT;
+use MRO::Compat;
 
 use Catalyst::Plugin::Cache::Curried;
 
@@ -25,7 +25,7 @@ sub setup {
     # and don't overwrite if some plugin was wicked
     $app->_cache_backends({}) unless $app->_cache_backends;
 
-    my $ret = $app->NEXT::setup( @_ );
+    my $ret = $app->maybe::next::method( @_ );
 
     $app->setup_cache_backends;
 
@@ -46,7 +46,7 @@ sub setup_cache_backends {
     my $app = shift;
 
     # give plugins a chance to find things for themselves
-    $app->NEXT::setup_cache_backends;
+    $app->maybe::next::method;
 
     foreach my $name ( keys %{ $app->config->{cache}{backends} } ) {
         next if $app->get_cache_backend( $name );
@@ -263,7 +263,7 @@ sub choose_cache_backend_wrapper {
     return $c->default_cache_backend;
 }
 
-sub choose_cache_backend { shift->NEXT::choose_cache_backend( @_ ) } # a convenient fallback
+sub choose_cache_backend { shift->maybe::next::method( @_ ) } # a convenient fallback
 
 sub cache_set {
     my ( $c, $key, $value, %meta ) = @_;

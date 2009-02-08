@@ -10,7 +10,7 @@ sub setup {
     my $app = shift;
     my $ret = $app->maybe::next::method( @_ );
 
-    my $regexes = $app->config->{cache}{key_regexes} ||= [];
+    my $regexes = $app->_get_cache_plugin_config->{key_regexes} ||= [];
 
     die "the regex list must be an array containing regexex/backend pairs" unless ref $regexes eq "ARRAY";
 
@@ -19,7 +19,7 @@ sub setup {
 
 sub get_cache_key_regexes {
     my ( $c, %meta ) = @_;
-    @{ $c->config->{cache}{key_regexes} };
+    @{ $c->_get_cache_plugin_config->{key_regexes} };
 }
 
 sub choose_cache_backend {

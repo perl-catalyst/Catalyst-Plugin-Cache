@@ -1,5 +1,8 @@
-0.07  UNRELEASED
-        - Switch from NEXT to MRO::Compat
+0.07
+        - Switch from NEXT to MRO::Compat.
+        - Change config key from 'cache' to 'Plugin::Cache', old key
+          is still supported for backwards compatibility, but the new
+          key is preferred (RT#40344).
 
 0.06
         - clarify the documentation on how to configure a backend

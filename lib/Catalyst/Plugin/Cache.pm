@@ -6,7 +6,7 @@ use base qw(Class::Accessor::Fast Class::Data::Inheritable);
 use strict;
 use warnings;
 
-our $VERSION = "0.06";
+our $VERSION = "0.07";
 
 use Scalar::Util ();
 use Catalyst::Utils ();
@@ -32,14 +32,19 @@ sub setup {
     $ret;
 }
 
+sub _get_cache_plugin_config {
+    my ($app) = @_;
+    return $app->config->{'Plugin::Cache'} || $app->config->{cache};
+}
+
 sub get_default_cache_backend_config {
     my ( $app, $name ) = @_;
-    $app->config->{cache}{backend} || $app->get_cache_backend_config("default");
+    $app->_get_cache_plugin_config->{backend} || $app->get_cache_backend_config("default");
 }
 
 sub get_cache_backend_config {
     my ( $app, $name ) = @_;
-    $app->config->{cache}{backends}{$name};
+    $app->_get_cache_plugin_config->{backends}{$name};
 }
 
 sub setup_cache_backends {
@@ -48,7 +53,9 @@ sub setup_cache_backends {
     # give plugins a chance to find things for themselves
     $app->maybe::next::method;
 
-    foreach my $name ( keys %{ $app->config->{cache}{backends} } ) {
+    # FIXME - Don't know why the _get_cache_plugin_config method doesn't work here!
+    my $conf = $app->config->{'Plugin::Cache'} ? $app->config->{'Plugin::Cache'}->{backends} : $app->config->{cache}->{backends};
+    foreach my $name ( keys %$conf ) {
         next if $app->get_cache_backend( $name );
         $app->setup_generic_cache_backend( $name, $app->get_cache_backend_config( $name ) || {} );
     }
@@ -71,7 +78,7 @@ sub setup_cache_backends {
 
 sub default_cache_store {
     my $app = shift;
-    $app->config->{cache}{default_store} || $app->guess_default_cache_store;
+    $app->_get_cache_plugin_config->{default_store} || $app->guess_default_cache_store;
 }
 
 sub guess_default_cache_store {
@@ -149,7 +156,7 @@ sub construct_curried_cache {
 
 sub curried_cache_class {
     my ( $c, @meta ) = @_;
-    $c->config->{cache}{curried_class} || "Catalyst::Plugin::Cache::Curried";
+    $c->_get_cache_plugin_config->{curried_class} || "Catalyst::Plugin::Cache::Curried";
 }
 
 sub curry_cache {
@@ -160,7 +167,7 @@ sub curry_cache {
 sub get_preset_curried {
     my ( $c, $name ) = @_;
 
-    if ( ref( my $preset = $c->config->{cache}{profiles}{$name} ) ) {
+    if ( ref( my $preset = $c->_get_cache_plugin_config->{profiles}{$name} ) ) {
         return $preset if Scalar::Util::blessed($preset);
 
         my @meta = ( ( ref $preset eq "HASH" ) ? %$preset : @$preset );
@@ -298,13 +305,13 @@ Catalyst::Plugin::Cache - Flexible caching support for Catalyst.
     /;
 
     # configure a backend or use a store plugin 
-    __PACKAGE__->config->{cache}{backend} = {
+    __PACKAGE__->config->{'Plugin::Cache'}{backend} = {
         class => "Cache::Bounded",
         # ... params for Cache::Bounded...
     };
 
     # typical example for Cache::Memcached::libmemcached
-    __PACKAGE__->config->{cache}{backend} = {
+    __PACKAGE__->config->{'Plugin::Cache'}{backend} = {
         class   => "Cache::Memcached::libmemcached",
         servers => ['127.0.0.1:11211'],
         debug   => 2,
@@ -494,12 +501,12 @@ See L<Catalyst::Plugin::Cache::Curried> for details.
 
 =head1 CONFIGURATION
 
-    $c->config->{cache} = {
+    $c->config->{'Plugin::Cache'} = {
         ...
     };
 
 All configuration parameters should be provided in a hash reference
-under the C<cache> key in the C<config> hash.
+under the C<Plugin::Cache> key in the C<config> hash.
 
 =head2 Backend Configuration
 
@@ -515,13 +522,13 @@ of the main config is assumed to be the backend named C<default>.
 
 Instantiate a backend from a L<Cache> compatible class. E.g.
 
-    $c->config->{cache}{backends}{small_things} = {
+    $c->config->{'Plugin::Cache'}{backends}{small_things} = {
         class    => "Cache::Bounded",
         interval => 1000,
         size     => 10000,
     };
     
-    $c->config->{cache}{backends}{large_things} = {
+    $c->config->{'Plugin::Cache'}{backends}{large_things} = {
         class => "Cache::Memcached",
         data  => '1.2.3.4:1234',
     };
@@ -534,7 +541,7 @@ The class will be C<required> as necessary during setup time.
 
 Instantiate a backend using a store plugin, e.g.
 
-    $c->config->{cache}{backend} = {
+    $c->config->{'Plugin::Cache'}{backend} = {
         store => "FastMmap",
     };
 
@@ -559,7 +566,7 @@ C<cache> method.
 
 For example when you specify
 
-    $c->config->{cache}{profiles}{thumbnails} = {
+    $c->config->{'Plugin::Cache'}{profiles}{thumbnails} = {
         backend => "large_things",
     };
 

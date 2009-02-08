@@ -20,7 +20,7 @@ use Catalyst::Plugin::Cache::Backend::Memory;
     ### the previous code simply ignored a croak
     ### this is still in line with the documentation.
     my %config = (
-        cache   => { 
+        'Plugin::Cache' => { 
             backend => { 
                 class   => 'Catalyst::Plugin::Cache::Backend::Memory',
             }

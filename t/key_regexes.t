@@ -15,7 +15,7 @@ use Catalyst::Plugin::Cache::Backend::Memory;
     use base qw/Catalyst::Plugin::Cache Catalyst::Plugin::Cache::Choose::KeyRegexes/;
 
     our %config = (
-        cache => {
+        'Plugin::Cache' => {
             key_regexes => [
                 qr/^foo/ => "foo_store",
                 qr/^bar/ => "bar_store",

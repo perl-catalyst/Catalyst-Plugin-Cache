@@ -15,7 +15,7 @@ use ok "Catalyst::Plugin::Cache";
     use base qw/Catalyst::Plugin::Cache/;
 
     my %config = (
-        cache => {
+        'Plugin::Cache' => {
             profiles => {
                 foo => {
                     bah => "foo",

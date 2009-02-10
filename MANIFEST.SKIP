@@ -27,3 +27,5 @@
 
 # Hate M::B
 \bBuild.PL$
+
+^.shipit$

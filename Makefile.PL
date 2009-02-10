@@ -9,6 +9,7 @@ WriteMakefile(
         'Test::Deep'      => 0,
         'Test::Exception' => 0,
         'Test::More'      => 0,
+        'MRO::Compat'     => 0,
 	'ok'              => 0,
    },
     'INSTALLDIRS' => 'site',

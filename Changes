@@ -1,3 +1,6 @@
+0.08
+        - Forgot to add MRO::Compat to Makefile.PL, fail.
+
 0.07
         - Switch from NEXT to MRO::Compat.
         - Change config key from 'cache' to 'Plugin::Cache', old key

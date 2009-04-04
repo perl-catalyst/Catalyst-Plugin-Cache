@@ -31,10 +31,23 @@ sub setup {
 
     $ret;
 }
-
-sub _get_cache_plugin_config {
-    my ($app) = @_;
-    return $app->config->{'Plugin::Cache'} || $app->config->{cache};
+{
+    my %has_warned_for;
+    sub _get_cache_plugin_config {
+        my ($app) = @_;
+        my $config = $app->config->{'Plugin::Cache'};
+        if (!$config) {
+            $config = $app->config->{cache};
+            my $appname = ref($app);
+            if (! $has_warned_for{$appname}++ ) {
+                $app->log->warn($config ?
+                    'Catalyst::Plugin::Cache config found in deprecated $c->config->{cache}, please move to $c->config->{"Plugin::Cache"}.'
+                    : 'Catalyst::Plugin::Cache config not found, using empty config!'
+                );
+            }
+        }
+        return $config || {};
+    }
 }
 
 sub get_default_cache_backend_config {
@@ -54,7 +67,7 @@ sub setup_cache_backends {
     $app->maybe::next::method;
 
     # FIXME - Don't know why the _get_cache_plugin_config method doesn't work here!
-    my $conf = $app->config->{'Plugin::Cache'} ? $app->config->{'Plugin::Cache'}->{backends} : $app->config->{cache}->{backends};
+    my $conf = $app->_get_cache_plugin_config->{backends};
     foreach my $name ( keys %$conf ) {
         next if $app->get_cache_backend( $name );
         $app->setup_generic_cache_backend( $name, $app->get_cache_backend_config( $name ) || {} );

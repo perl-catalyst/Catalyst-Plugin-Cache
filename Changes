@@ -1,3 +1,5 @@
+        - Generate a warning if no config is specified, or config
+          is specified using the old key.
 0.08
         - Forgot to add MRO::Compat to Makefile.PL, fail.
 

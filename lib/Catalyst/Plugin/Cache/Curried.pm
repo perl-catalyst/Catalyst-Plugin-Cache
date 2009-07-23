@@ -36,13 +36,19 @@ sub set {
 }
 
 sub get {
-    my ( $self, $key, @meta ) = @_;
+    my ( $self, $key ) = @_;
     $self->c->cache_get( $key, @{ $self->meta } );
 }
 
 sub remove {
-    my ( $self, $key, @meta ) = @_;
+    my ( $self, $key ) = @_;
     $self->c->cache_remove( $key, @{ $self->meta } );
+}
+
+sub compute {
+    my ($self, $key, $code, @meta) = @_;
+    @meta = ( expires => $meta[0] ) if @meta == 1;
+    $self->c->cache_compute( $key, $code, @{ $self->meta }, @meta );
 }
 
 __PACKAGE__;
@@ -85,9 +91,11 @@ the additional meta.
 
 =item remove $key, %additional_meta
 
-Dellegate to the C<c> object's C<cache_set>, C<cache_get> or C<cache_remove>
-with the arguments, then the captured meta from C<meta>, and then the
-additional meta.
+=item compute $key, $code, %additional_meta
+
+Dellegate to the C<c> object's C<cache_set>, C<cache_get>, C<cache_remove>
+or C<cache_compute> with the arguments, then the captured meta from C<meta>,
+and then the additional meta.
 
 =item meta
 

@@ -301,6 +301,24 @@ sub cache_remove {
     $c->choose_cache_backend_wrapper( key => $key, @meta )->remove( $key );
 }
 
+sub cache_compute {
+    my ($c, $key, $code, %meta) = @_;
+
+    my $backend = $c->choose_cache_backend_wrapper( key =>  $key, %meta );
+    if ($backend->can('compute')) {
+        return $backend->compute( $key, $code, exists $meta{expires} ? $meta{expires} : () );
+    }
+
+    Carp::croak "must specify key and code" unless defined($key) && defined($code);
+
+    my $value = $c->cache_get( $key, %meta );
+    if ( !defined $value ) {
+        $value = $code->();
+        $c->cache_set( $key, $value, %meta );
+    }
+    return $value;
+}
+
 __PACKAGE__;
 
 __END__
@@ -388,8 +406,16 @@ See L</METADATA> for details.
 
 =item cache_remove $key, %meta
 
+=item cache_compute $key, $code, %meta
+
 These cache operations will call L<choose_cache_backend> with %meta, and
-then call C<set>, C<get>, or C<remove> on the resulting backend object.
+then call C<set>, C<get>, C<remove>, or C<compute> on the resulting backend
+object.
+
+If the backend object does not support C<compute> then we emulate it by
+calling L<cache_get>, and if the returned value is undefined we call the passed
+code reference, stores the returned value with L<cache_set>, and then returns
+the value.  Inspired by L<CHI>.
 
 =item choose_cache_backend %meta
 

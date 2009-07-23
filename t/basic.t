@@ -93,3 +93,12 @@ my $cache_norm = $c->cache();
 
 is( $cache_norm->get("foo"), undef, "default curried cache has no foo");
 is( $cache_elk->get("foo"), "gorch", "curried custom backend has foo" );
+
+
+is( $c->cache->get('compute_test'), undef, 'compute_test key is undef by default' );
+is( $c->cache->compute('compute_test',sub{'monkey'}), 'monkey', 'compute returned code value' );
+is( $c->cache->get('compute_test'), 'monkey', 'compute_test key is now set' );
+is( $c->cache->compute('compute_test',sub{'donkey'}), 'monkey', 'compute returned cached value' );
+$c->cache->remove('compute_test');
+is( $c->cache->compute('compute_test',sub{'donkey'}), 'donkey', 'compute returned second code value' );
+

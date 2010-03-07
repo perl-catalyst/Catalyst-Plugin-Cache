@@ -1,3 +1,5 @@
+^Catalyst-Plugin-Cache
+
 # Avoid version control files.
 \bRCS\b
 \bCVS\b

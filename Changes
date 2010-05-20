@@ -1,3 +1,10 @@
+        - Change to Module::Install
+        - Drop test dep on ok
+        - Split requires and test_requires
+        - Fix bug when used in conjunction with ::Model::DBIC::Schema
+          Caching trait by not trying to cache the curried cache instance when
+          we don't have a request instance to cache it against
+
 0.09
         - Generate a warning if no config is specified, or config
           is specified using the old key.

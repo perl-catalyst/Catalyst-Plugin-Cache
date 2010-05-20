@@ -1,3 +1,4 @@
+0.10
         - Change to Module::Install
         - Drop test dep on ok
         - Split requires and test_requires

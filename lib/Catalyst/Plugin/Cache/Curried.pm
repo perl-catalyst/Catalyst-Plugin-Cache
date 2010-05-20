@@ -19,7 +19,8 @@ sub new {
         meta => \@meta,
     });
 
-    Scalar::Util::weaken( $self->{c} );
+    Scalar::Util::weaken( $self->{c} )
+        if ref( $self->{c} );
 
     return $self;
 }

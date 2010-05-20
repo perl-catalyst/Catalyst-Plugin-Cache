@@ -6,7 +6,7 @@ use warnings;
 use Test::More 'no_plan';
 use Test::Exception;
 
-use ok "Catalyst::Plugin::Cache";
+use_ok "Catalyst::Plugin::Cache";
 
 use Catalyst::Plugin::Cache::Backend::Memory;
 

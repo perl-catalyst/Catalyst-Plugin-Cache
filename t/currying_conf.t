@@ -3,12 +3,12 @@
 use strict;
 use warnings;
 
-use Test::More 'no_plan';
+use Test::More;
 use Test::Deep qw/superhashof cmp_deeply/;
 
 use Scalar::Util qw/refaddr/;
 
-use ok "Catalyst::Plugin::Cache";
+use_ok "Catalyst::Plugin::Cache";
 
 {
     package MockApp;
@@ -56,4 +56,6 @@ isa_ok( $c->cache("foo"), "Catalyst::Plugin::Cache::Curried", "cache('foo')" );
 cmp_deeply( { @{ $c->cache("foo")->meta } }, superhashof({ bah => "foo" }), "meta is in place" ); 
 
 is( refaddr( $c->cache("bar") ), refaddr( $c->cache("bar") ), "since bar is hard coded as an object it's always the same" );
+
+done_testing;
 

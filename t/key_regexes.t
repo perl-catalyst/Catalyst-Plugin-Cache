@@ -3,10 +3,10 @@
 use strict;
 use warnings;
 
-use Test::More 'no_plan';
+use Test::More;
 
-use ok "Catalyst::Plugin::Cache";
-use ok "Catalyst::Plugin::Cache::Choose::KeyRegexes";
+use_ok "Catalyst::Plugin::Cache";
+use_ok "Catalyst::Plugin::Cache::Choose::KeyRegexes";
 
 use Catalyst::Plugin::Cache::Backend::Memory;
 
@@ -59,4 +59,5 @@ is( $c->get_cache_backend("bar_store")->get("baz_laa"), undef, "no non match in 
 is( $c->get_cache_backend("bar_store")->get("foo_laa"), undef, "no foo key" );
 is( $c->get_cache_backend("bar_store")->get("bar_laa"), "laa", "has bar key" );
 
+done_testing;
 

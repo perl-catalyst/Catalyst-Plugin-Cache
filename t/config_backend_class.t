@@ -3,9 +3,9 @@
 use strict;
 use warnings;
 
-use Test::More 'no_plan';
+use Test::More;
 
-use ok "Catalyst::Plugin::Cache";
+use_ok "Catalyst::Plugin::Cache";
 
 {
     package MockApp;
@@ -34,4 +34,6 @@ my $registered = MockApp->get_cache_backend( "foo" );
 ok( $registered, "registered a backend" );
 
 is_deeply( $registered, MyCache->new({ param => "foo" }), "params sent correctly" );
+
+done_testing;
 

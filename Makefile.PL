@@ -1,18 +1,15 @@
-use ExtUtils::MakeMaker;
-WriteMakefile(
-    'NAME'         => 'Catalyst::Plugin::Cache',
-    'VERSION_FROM' => 'lib/Catalyst/Plugin/Cache.pm',
-    'PREREQ_PM'    => {
-        'Catalyst'        => '5.7',
-        'Storable'        => 0,
-        'Task::Weaken'    => 0,
-        'Test::Deep'      => 0,
-        'Test::Exception' => 0,
-        'Test::More'      => 0,
-        'MRO::Compat'     => 0,
-	'ok'              => 0,
-   },
-    'INSTALLDIRS' => 'site',
-    'EXE_FILES'   => [],
-    'PL_FILES'    => {},
-);
+use inc::Module::Install;
+
+name 'Catalyst-Plugin-Cache';
+all_from 'lib/Catalyst/Plugin/Cache.pm';
+requires        'Catalyst'        => '5.7';
+requires 'Storable'        => 0;
+requires        'Task::Weaken'    => 0;
+test_requires        'Test::Deep'      => 0;
+test_requires        'Test::Exception' => 0;
+test_requires        'Test::More'      => '0.88';
+requires        'MRO::Compat'     => 0;
+
+resources repository => 'http://dev.catalyst.perl.org/repos/Catalyst/trunk/Catalyst-Plugin-Cache';
+WriteAll;
+

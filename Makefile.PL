@@ -10,6 +10,6 @@ test_requires        'Test::Exception' => 0;
 test_requires        'Test::More'      => '0.88';
 requires        'MRO::Compat'     => 0;
 
-resources repository => 'http://dev.catalyst.perl.org/repos/Catalyst/trunk/Catalyst-Plugin-Cache';
+resources repository  => 'git://git.shadowcat.co.uk/catagits/Catalyst-Plugin-Cache.git';
 WriteAll;
 

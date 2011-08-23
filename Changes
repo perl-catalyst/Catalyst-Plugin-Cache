@@ -1,3 +1,5 @@
+        - Convert repository to git (fREW Schmidt)
+
 0.10
         - Change to Module::Install
         - Drop test dep on ok

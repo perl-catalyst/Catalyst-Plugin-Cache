@@ -2,7 +2,7 @@ use inc::Module::Install;
 
 name 'Catalyst-Plugin-Cache';
 all_from 'lib/Catalyst/Plugin/Cache.pm';
-requires        'Catalyst'        => '5.7';
+requires        'Catalyst'        => '5.8';
 requires 'Storable'        => 0;
 requires        'Task::Weaken'    => 0;
 test_requires        'Test::Deep'      => 0;

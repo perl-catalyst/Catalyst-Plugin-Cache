@@ -1,10 +1,9 @@
 #!/usr/bin/perl
 
 package Catalyst::Plugin::Cache;
-use base qw(Class::Accessor::Fast Class::Data::Inheritable);
+use Moose;
 
-use strict;
-use warnings;
+with 'Catalyst::ClassData';
 
 our $VERSION = "0.10";
 
@@ -16,7 +15,10 @@ use Scalar::Util qw/ blessed /;
 use Catalyst::Plugin::Cache::Curried;
 
 __PACKAGE__->mk_classdata( "_cache_backends" );
-__PACKAGE__->mk_accessors( "_default_curried_cache" );
+has _default_curried_cache => (
+    is => 'rw',
+);
+no Moose;
 
 sub setup {
     my $app = shift;

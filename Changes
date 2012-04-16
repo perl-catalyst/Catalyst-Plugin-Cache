@@ -1,3 +1,5 @@
+        - Remove .git from MANIFEST
+
 0.11
         - Convert repository to git (fREW Schmidt)
         - Depend on Catalyst 5.8 and so lose un-declared dependencies

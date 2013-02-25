@@ -5,7 +5,7 @@ use Moose;
 
 with 'Catalyst::ClassData';
 
-our $VERSION = "0.11";
+our $VERSION = "0.12";
 
 use Scalar::Util ();
 use Catalyst::Utils ();

@@ -1,5 +1,6 @@
 ^Catalyst-Plugin-Cache
 
+\B.git\b
 # Avoid version control files.
 \bRCS\b
 \bCVS\b
